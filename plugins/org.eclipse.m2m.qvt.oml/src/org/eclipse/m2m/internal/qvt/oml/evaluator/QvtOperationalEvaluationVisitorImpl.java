@@ -869,6 +869,21 @@ implements QvtOperationalEvaluationVisitor, InternalEvaluator, DeferredAssignmen
     }
 
 	protected MappingCallResult executeMappingBody(MappingOperation mappingOperation, QvtOperationalEvaluationEnv evalEnv) {
+		
+		// START ////////////////////////////////////////////////
+		// You've found the 'bug' in the engine!
+		// Now remove this section and profile again with 
+		// the patched QVTo engine. 
+		/////////////////////////////////////////////////////////
+		if (!mappingOperation.getEParameters().isEmpty()) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				QvtPlugin.error("QVTo workshop patch failed", e);
+			}
+		}
+		// END //////////////////////////////////////////////////
+		
         // check the traces whether the relation already holds
 		TraceRecord traceRecord = TraceUtil.getTraceRecord(evalEnv, mappingOperation);
 		if (traceRecord != null) {
