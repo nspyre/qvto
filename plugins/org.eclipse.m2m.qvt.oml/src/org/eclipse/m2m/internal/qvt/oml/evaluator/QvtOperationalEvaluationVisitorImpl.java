@@ -870,12 +870,18 @@ implements QvtOperationalEvaluationVisitor, InternalEvaluator, DeferredAssignmen
 
 	protected MappingCallResult executeMappingBody(MappingOperation mappingOperation, QvtOperationalEvaluationEnv evalEnv) {
 		
+        // check the traces whether the relation already holds
+		TraceRecord traceRecord = TraceUtil.getTraceRecord(evalEnv, mappingOperation);
+		if (traceRecord != null) {
+			return new MappingCallResult(TraceUtil.fetchResultFromTrace(evalEnv, traceRecord), evalEnv, MappingCallResult.FETCHED_FROM_TRACE);
+		}
+		
 		// START ////////////////////////////////////////////////
 		// You've found the 'bug' in the engine!
 		// Now remove this section and profile again with 
 		// the patched QVTo engine. 
 		/////////////////////////////////////////////////////////
-		if (!mappingOperation.getEParameters().isEmpty()) {
+		if (!mappingOperation.getDisjunct().isEmpty()) {
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
@@ -883,12 +889,6 @@ implements QvtOperationalEvaluationVisitor, InternalEvaluator, DeferredAssignmen
 			}
 		}
 		// END //////////////////////////////////////////////////
-		
-        // check the traces whether the relation already holds
-		TraceRecord traceRecord = TraceUtil.getTraceRecord(evalEnv, mappingOperation);
-		if (traceRecord != null) {
-			return new MappingCallResult(TraceUtil.fetchResultFromTrace(evalEnv, traceRecord), evalEnv, MappingCallResult.FETCHED_FROM_TRACE);
-		}
 		
 		if(!mappingOperation.getDisjunct().isEmpty()) {
 			return dispatchDisjunctMapping(mappingOperation);
